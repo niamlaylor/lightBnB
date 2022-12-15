@@ -110,15 +110,7 @@ const getAllProperties = (options, limit = 10) => {
   WHERE title = title
   `;
 
-  // if (options.city && options.minimum_price_per_night && options.maximum_price_per_night && options.minimum_rating) {
-  //   queryParams.push(`%${options.city}%`);
-  //   queryString += `WHERE properties.city LIKE $${queryParams.length} `;
-  //   queryParams.push(`${options.minimum_price_per_night}`);
-  //   queryString += `AND cost_per_night > $${queryParams.length} `;
-  //   queryParams.push(`${options.maximum_price_per_night}`);
-  //   queryString += `AND cost_per_night < $${queryParams.length} `;
-
-  // }
+// Add each filter option if they're truthy
   if (options.city) {
     queryParams.push(`%${options.city}%`);
     queryString += `AND city LIKE $${queryParams.length} `;
@@ -152,8 +144,6 @@ const getAllProperties = (options, limit = 10) => {
   LIMIT $${queryParams.length};
   `;
 
-  console.log(queryString, queryParams)
-
   return pool
     .query(queryString, queryParams)
     .then((properties) => {
@@ -173,20 +163,14 @@ exports.getAllProperties = getAllProperties;
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function(property) {
-  // const propertyId = Object.keys(properties).length + 1;
-  // property.id = propertyId;
-  // properties[propertyId] = property;
-  // return Promise.resolve(property);
-  let queryParams = [];
-  for (const parameter in property) {
-    queryParams.push(property[parameter]);
-  };
+
+  let queryParams = Object.values(property);
 
   let queryString = `
   INSERT INTO properties (title, description, number_of_bedrooms, number_of_bathrooms, parking_spaces, cost_per_night, thumbnail_photo_url, cover_photo_url, street, country, city, province, post_code, owner_id)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
   RETURNING *`;
-  
+
   return pool
     .query(queryString, queryParams)
     .then((property) => {
