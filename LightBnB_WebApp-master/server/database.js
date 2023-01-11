@@ -20,7 +20,6 @@ const getUserWithEmail = function(email) {
   return pool
     .query(`SELECT * FROM users WHERE email LIKE $1`, [email])
     .then((user) => {
-      console.log(user.rows)
       if (user.rows.length === 0) {
         return null;
       }
