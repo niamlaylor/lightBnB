@@ -20,10 +20,11 @@ const getUserWithEmail = function(email) {
   return pool
     .query(`SELECT * FROM users WHERE email LIKE $1`, [email])
     .then((user) => {
-      if (!user.rows.length) {
+      console.log(user.rows)
+      if (user.rows.length === 0) {
         return null;
       }
-      return Promise.resolve(user.rows[0]);
+      return user.rows[0];
     })
     .catch((err) => {
       console.log(err);
@@ -40,7 +41,7 @@ const getUserWithId = function(id) {
   return pool
     .query(`SELECT * FROM users WHERE users.id = $1`, [id])
     .then((users) => {
-      return Promise.resolve(users.rows[0]);
+      return users.rows[0];
     })
 }
 exports.getUserWithId = getUserWithId;
@@ -53,9 +54,9 @@ exports.getUserWithId = getUserWithId;
  */
 const addUser =  function(user) {
   return pool
-    .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`, [user.name, user.password, user.email])
+    .query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`, [user.name, user.email, user.password])
     .then((user) => {
-      return Promise.resolve(user.rows[0]);
+      return user.rows[0];
     })
 }
 
@@ -79,7 +80,7 @@ const getAllReservations = function(guest_id, limit = 10) {
     ORDER BY reservations.start_date
     LIMIT $2`, [guest_id, limit])
     .then((reservations) => {
-      return Promise.resolve(reservations.rows);
+      return reservations.rows;
     })
 }
 exports.getAllReservations = getAllReservations;
@@ -147,7 +148,7 @@ const getAllProperties = (options, limit = 10) => {
   return pool
     .query(queryString, queryParams)
     .then((properties) => {
-      return Promise.resolve(properties.rows);
+      return properties.rows;
     })
     .catch((err) => {
       console.log(err.message);
@@ -174,7 +175,7 @@ const addProperty = function(property) {
   return pool
     .query(queryString, queryParams)
     .then((property) => {
-      return Promise.resolve(property);
+      return property;
     })
 }
 exports.addProperty = addProperty;
